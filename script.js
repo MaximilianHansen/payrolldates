@@ -1,42 +1,49 @@
-var day2;
+var resultsDiv = document.getElementById('resultsDiv');
+let datesArr;
 
-function getDates(lastDate){
-    console.log(lastDate)
+function convertMMDDYY(input){
+        let newDate = new Date(input);
+        let temp = (newDate.getMonth()+1).toString().padStart(2, '0') + '/' +
+        newDate.getDate().toString().padStart(2, '0') + '/' +
+        (newDate.getFullYear() % 100).toString().padStart(2, '0'); 
+        console.log(temp,"mmddyy") 
+        return temp 
+    }
+
+function genDatesArr(lastDate){ 
     lastDate = new Date(lastDate);
-    temp = lastDate.getDate();
+    let temp = lastDate.getDate()
+    console.log(lastDate,"last date")
     day1 = new Date(lastDate.setDate(temp+1));
     day2 = new Date(lastDate.setDate(temp+14));
+    let datesArr = [convertMMDDYY(day1),convertMMDDYY(day2)]
+    console.log(datesArr[0], datesArr[1],"new function output")
+    return datesArr
+}
 
-    var resultsDiv = document.getElementById('resultsDiv');
+document.getElementById("btn1").onclick = function(){
     var sendDate = document.getElementById('sendDate').value;
     var email = document.getElementById('email').value;
-    resultsDiv.insertAdjacentHTML('beforeend', "<h1 class=\"text-lg mt-8\">"+"Payroll dates are "+day1.getMonth()+"/"+day1.getDate()+" to "+day2.getMonth()+"/"+day2.getDate()+"</h1>");
-
-    var dates = day1.getMonth()+"/"+day1.getDate()+day2.getMonth()+"/"+day2.getDate();
-    console.log(dates);
-
-    fetch('http://localhost:3000/email', {
+    var inputValue = document.getElementById('input1').value;
+    datesArr = genDatesArr(inputValue)
+    fetch('http://localhost:3000/addUser', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(
             {
-                "startDate": day1.getMonth()+"/"+day1.getDate(),
-                "endDate": day2.getMonth()+"/"+day2.getDate(),
-                "sendDate":sendDate,
+                "startDate": datesArr[0],
+                "endDate": datesArr[1],
+                "sendDate":convertMMDDYY(sendDate),
                 "email":email
             }
         )})
     .then(response => response.json()) // parse JSON from response
     .then(data => console.log(data.text))
     .catch(error => console.error('Error:', error));
-}
 
-
-
-
-document.getElementById("btn1").onclick = function(){
-    var inputValue = document.getElementById('input1').value;
-    getDates(inputValue)}; 
+    resultsDiv.insertAdjacentHTML(
+        'beforeend', "<h1 class=\"text-lg mt-8\">"+"Payroll dates are "+datesArr[0]+" to "+datesArr[1]+"</h1>");
+}; 
 
 
 
