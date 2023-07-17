@@ -21,10 +21,24 @@ function genDatesArr(lastDate){
     return datesArr
 }
 
+function validateEmail(email) {
+    const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+    return regex.test(email);
+}
+
+function validateDate(date) {
+    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/([0-9]{2})$/;
+    return regex.test(date);
+}
+
+
+
 document.getElementById("btn1").onclick = function(){
     var sendDate = document.getElementById('sendDate').value;
     var email = document.getElementById('email').value;
     var inputValue = document.getElementById('input1').value;
+    resultsDiv.innerHTML = "";
+    if(validateDate(sendDate) && validateDate(inputValue) && validateEmail(email)){
     datesArr = genDatesArr(inputValue)
     fetch('http://localhost:3000/addUser', {
         method: 'POST',
@@ -42,7 +56,12 @@ document.getElementById("btn1").onclick = function(){
     .catch(error => console.error('Error:', error));
 
     resultsDiv.insertAdjacentHTML(
-        'beforeend', "<h1 class=\"text-lg mt-8\">"+"Payroll dates are "+datesArr[0]+" to "+datesArr[1]+"</h1>");
+        'beforeend', "<h1 class=\"text-lg mt-8\">"+"Next payroll dates are "+datesArr[0]+" to "+datesArr[1]+".<br><br> We will email you every payroll, please check spam and allow emails from info@payrolldates.com</h1>");}
+        else {
+            console.log("invalid entry")
+            resultsDiv.insertAdjacentHTML(
+                'beforeend', "<h1 class=\"text-lg text-red-600 mt-8 \">"+"Please Correct your Date or Email Formatting!"+"</h1>");
+        }
 }; 
 
 

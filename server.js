@@ -60,8 +60,6 @@ function genDatesArr(lastDate){
 
 let dailyJob = schedule.scheduleJob('0 0 4 * * *', findUsers());
 
-findUsers()
-
 async function findUsers() {
   try {
     await client.connect();
@@ -119,7 +117,6 @@ function emailUsers(payTodayUsers){
     }
   }
 
-
 app.post('/addUser', (req, res) => {  
   var data = req.body;
   async function addUser(data) {
@@ -136,7 +133,6 @@ app.post('/addUser', (req, res) => {
     }
   addUser(data).catch(console.dir);
 });
-
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
