@@ -121,7 +121,7 @@ function emailUsers(payTodayUsers){
     }
   }
 
-app.post('/addUser', (req, res) => {  
+app.post('/api/addUser', (req, res) => {  
   var data = req.body;
   async function addUser(data) {
       try {
