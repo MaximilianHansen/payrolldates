@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const cors = require('cors');
 require('dotenv').config()
 app.use(cors())
@@ -6,7 +7,7 @@ app.use(cors())
 const { MongoClient, ServerApiVersion } = require("mongodb");
 var uri = "mongodb://localhost:27017";
 const bodyParser = require('body-parser');
-const app = express();
+
 const port = 3000;
 const nodemailer = require("nodemailer");
 const schedule = require('node-schedule');
