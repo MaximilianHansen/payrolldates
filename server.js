@@ -15,6 +15,12 @@ const schedule = require('node-schedule');
 
 app.use(bodyParser.json())
 
+app.use('/', (req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log(req.body)
+  next();
+});
+
 
 const client = new MongoClient(uri,  {
   serverApi: {
