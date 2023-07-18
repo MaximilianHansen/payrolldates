@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
+app.use(cors())
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 var uri = "mongodb://localhost:27017";
@@ -10,7 +11,7 @@ const port = 3000;
 const nodemailer = require("nodemailer");
 const schedule = require('node-schedule');
 
-app.use(cors())
+
 app.use(bodyParser.json())
 
 
@@ -58,7 +59,9 @@ function genDatesArr(lastDate){
   return datesArr
 }
 
-let dailyJob = schedule.scheduleJob('0 0 4 * * *', findUsers());
+schedule.scheduleJob('0 0 4 * * *', function(){
+  findUsers()
+});
 
 async function findUsers() {
   try {
