@@ -40,7 +40,7 @@ document.getElementById("btn1").onclick = function(){
     resultsDiv.innerHTML = "";
     if(validateDate(sendDate) && validateDate(inputValue) && validateEmail(email)){
     datesArr = genDatesArr(inputValue)
-    fetch('http://localhost:3000/addUser', {
+    fetch('http://54.147.216.5:3000/addUser', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(
