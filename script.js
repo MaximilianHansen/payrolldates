@@ -1,4 +1,5 @@
 var resultsDiv = document.getElementById('resultsDiv');
+var clearDiv = document.getElementById('clearDiv');
 let datesArr;
 
 function convertMMDDYY(input){
@@ -55,8 +56,10 @@ document.getElementById("btn1").onclick = function(){
     .then(data => console.log(data.text))
     .catch(error => console.error('Error:', error));
 
+    clearDiv.innerHTML = "";
+
     resultsDiv.insertAdjacentHTML(
-        'beforeend', "<h1 class=\"text-lg mt-8\">"+"Next payroll dates are "+datesArr[0]+" to "+datesArr[1]+".<br><br> We will email you every payroll, please check spam and allow emails from info@payrolldates.com</h1>");}
+        'beforeend', "<h1 class=\"text-lg mt-8\">"+"Thank you for using payrolldates.com, your next payroll dates are "+datesArr[0]+" to "+datesArr[1]+".<br><br> We will email you the payroll dates early morning of every payroll day. We just sent you an introductory email, please check spam and allow emails from info@payrolldates.com</h1>");}
         else {
             console.log("invalid entry")
             resultsDiv.insertAdjacentHTML(
