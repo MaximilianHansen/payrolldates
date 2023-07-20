@@ -140,9 +140,10 @@ app.post('/api/addUser', (req, res) => {
 
         var mailOptions = {
           from : "info@payrolldates.com",
-          to: data.email,
+          to: doc.email,
           subject : `Thank you for joining Payrolldates.com!`,
-          text : `We will send you an email every morning you send payroll in with the dates of your payroll. Thank you!`}
+          text : `We will send you an email every morning you send payroll in with the dates of your payroll.\n\nThank you,\n\nMax Hansen`}
+
           transporter.sendMail(mailOptions, function(error, info){
             if (error) {
               console.log(error);
