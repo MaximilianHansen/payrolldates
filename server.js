@@ -86,24 +86,26 @@ async function findUsers() {
     await client.close();}
   }
 
-function emailUsers(payTodayUsers){
-    for (let i = 0; i < payTodayUsers.length; i++) {
-      var mailOptions = {
-        from : "info@payrolldates.com",
-        to: payTodayUsers[i].email,
-        subject : `Paydates!`,
-        text : `Start date is ${payTodayUsers[i].startDate} end date is ${payTodayUsers[i].endDate}`}
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log(error);
-            res.status(401).json('error it did not worky');
-          } else {
-            console.log("email sent")
-            res.json('Email sent!');
-          }
-        });
+async function emailUsers(payTodayUsers){
+  for (let i = 0; i < payTodayUsers.length; i++) {
+    var mailOptions = {
+      from: "info@payrolldates.com",
+      to: payTodayUsers[i].email,
+      subject: `Paydates!`,
+      text: `Start date is ${payTodayUsers[i].startDate} end date is ${payTodayUsers[i].endDate}`
+    };
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("email sent");
+      await updateDates(payTodayUsers[i].endDate, payTodayUsers[i]._id, payTodayUsers[i].sendDate);
+    } catch (error) {
+      console.log(error);
+      // Handle the error accordingly
+    }
+  }
+  }
 
-        async function updateDates(lastDate,id,sendDate) {
+async function updateDates(lastDate,id,sendDate) {
           try {
             await client.connect();
             const database = client.db('pddb');
@@ -123,9 +125,6 @@ function emailUsers(payTodayUsers){
             //await client.close();
             }
           }
-      updateDates(payTodayUsers[i].endDate,payTodayUsers[i]._id,payTodayUsers[i].sendDate)
-    }
-  }
 
 app.post('/api/addUser', (req, res) => {  
   var data = req.body;
