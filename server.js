@@ -67,9 +67,9 @@ function genDatesArr(lastDate){
 }
 
 schedule.scheduleJob('0 0 4 * * *', function(){
-  
+  findUsers()
 });
-findUsers()
+
 
 async function findUsers() {
   try {
