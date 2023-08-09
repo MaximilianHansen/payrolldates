@@ -54,23 +54,20 @@ function convertMMDDYY(input){
               let newDate = new Date(input);
               let temp = (newDate.getMonth()+1).toString().padStart(2, '0') + '/' +
               newDate.getDate().toString().padStart(2, '0') + '/' +
-              (newDate.getFullYear() % 100).toString().padStart(2, '0'); 
-              console.log(temp,"mmddyy") 
+              (newDate.getFullYear() % 100).toString().padStart(2, '0');  
               return temp 
   }
 
 function genSendDate(lastDate){ 
           lastDate = new Date(lastDate);
-          let temp = lastDate.getDate()
-          console.log(lastDate,"last date")
+          let temp = lastDate.getDate();
           day1 = new Date(lastDate.setDate(temp+14));
           return convertMMDDYY(day1);
       }
 
 function genDatesArr(lastDate){
   lastDate = new Date(lastDate);
-  let temp = lastDate.getDate()
-  console.log(lastDate,"last date")
+  let temp = lastDate.getDate();
   day1 = new Date(lastDate.setDate(temp+1));
   day2 = new Date(lastDate.setDate(temp+14));
   let datesArr = [convertMMDDYY(day1),convertMMDDYY(day2)]
@@ -78,13 +75,12 @@ function genDatesArr(lastDate){
 }
 
 schedule.scheduleJob('0 0 4 * * *', function(){
-  
+  findUsers()
 });
 
-findUsers()
+
 
 async function findUsers() {
-  
     const database = client.db('pddb');
     const collection = database.collection('users');
     let today = new Date();
@@ -99,7 +95,7 @@ async function findUsers() {
 
 async function emailUsers(payTodayUsers){
   for (let i = 0; i < payTodayUsers.length; i++) {
-    console.log(`Processing record ${i + 1}`);
+    console.log(`Processing record ${payTodayUsers[i].email}`);
     var mailOptions = {
       from: "info@payrolldates.com",
       to: payTodayUsers[i].email,
@@ -108,11 +104,11 @@ async function emailUsers(payTodayUsers){
     };
     try {
       await transporter.sendMail(mailOptions);
-      console.log(`Email sent for record ${i + 1}`);
+      console.log(`Email sent for record ${payTodayUsers[i].email}`);
       await updateDates(payTodayUsers[i].endDate, payTodayUsers[i]._id, payTodayUsers[i].sendDate);
-      console.log(`Update completed for record ${i + 1}`);
+      console.log(`Update completed for record ${payTodayUsers[i].email}`);
     } catch (error) {
-      console.log(`Error for record ${i + 1}:`, error);
+      console.log(`Error for record ${payTodayUsers[i].email}:`, error);
       // Handle the error accordingly
     }
   }
@@ -127,8 +123,6 @@ async function updateDates(lastDate,id,sendDate) {
               { _id: id},  
               { $set: { "startDate": newDatesArr[0], "endDate": newDatesArr[1], "sendDate": genSendDate(sendDate)} }  
             );
-
-            console.log(result)
             //const payTodayUser = await cursor.toArray();
             //console.log('found'+JSON.stringify(payTodayUser));
         
@@ -142,7 +136,7 @@ app.post('/api/addUser', (req, res) => {
         const collection = database.collection('users');
         const doc = { email: data.email , startDate: data.startDate, endDate: data.endDate, sendDate: data.sendDate };
         const result = await collection.insertOne(doc);
-        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        console.log(`A document was inserted with the _id: ${result.insertedId} and email ${data.email}`);
 
         var mailOptions = {
           from : "info@payrolldates.com",
