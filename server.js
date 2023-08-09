@@ -18,7 +18,7 @@ const client = new MongoClient(uri,  {
       strict: true,
       deprecationErrors: true,
   }});
-  
+
 client.connect()
   .then(() => {
     console.log("Connected to MongoDB");
@@ -78,9 +78,10 @@ function genDatesArr(lastDate){
 }
 
 schedule.scheduleJob('0 0 4 * * *', function(){
-  findUsers()
+  
 });
 
+findUsers()
 
 async function findUsers() {
   
