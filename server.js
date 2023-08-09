@@ -12,6 +12,22 @@ const port = 3000;
 const nodemailer = require("nodemailer");
 const schedule = require('node-schedule');
 
+const client = new MongoClient(uri,  {
+  serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+  }});
+  
+client.connect()
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch(err => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });
+
 
 app.use(bodyParser.json())
 
@@ -22,12 +38,7 @@ app.use('/', (req, res, next) => {
 });
 
 
-const client = new MongoClient(uri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }});
+
 
 const transporter = nodemailer.createTransport({
     host: "mail.privateemail.com",
@@ -72,8 +83,7 @@ schedule.scheduleJob('0 0 4 * * *', function(){
 
 
 async function findUsers() {
-  try {
-    await client.connect();
+  
     const database = client.db('pddb');
     const collection = database.collection('users');
     let today = new Date();
@@ -83,12 +93,12 @@ async function findUsers() {
     const cursor = collection.find({sendDate: todayString});
     const payTodayUsers = await cursor.toArray();
     emailUsers(payTodayUsers);
-  } finally {
-    await client.close();}
-  }
+  } 
+  
 
 async function emailUsers(payTodayUsers){
   for (let i = 0; i < payTodayUsers.length; i++) {
+    console.log(`Processing record ${i + 1}`);
     var mailOptions = {
       from: "info@payrolldates.com",
       to: payTodayUsers[i].email,
@@ -97,18 +107,17 @@ async function emailUsers(payTodayUsers){
     };
     try {
       await transporter.sendMail(mailOptions);
-      console.log("email sent");
+      console.log(`Email sent for record ${i + 1}`);
       await updateDates(payTodayUsers[i].endDate, payTodayUsers[i]._id, payTodayUsers[i].sendDate);
+      console.log(`Update completed for record ${i + 1}`);
     } catch (error) {
-      console.log(error);
+      console.log(`Error for record ${i + 1}:`, error);
       // Handle the error accordingly
     }
   }
   }
 
 async function updateDates(lastDate,id,sendDate) {
-          try {
-            await client.connect();
             const database = client.db('pddb');
             const collection = database.collection('users');
             let newDatesArr = genDatesArr(lastDate);
@@ -122,16 +131,12 @@ async function updateDates(lastDate,id,sendDate) {
             //const payTodayUser = await cursor.toArray();
             //console.log('found'+JSON.stringify(payTodayUser));
         
-            } finally {
-            //await client.close();
             }
-          }
+          
 
 app.post('/api/addUser', (req, res) => {  
   var data = req.body;
   async function addUser(data) {
-      try {
-        await client.connect();
         const database = client.db('pddb');
         const collection = database.collection('users');
         const doc = { email: data.email , startDate: data.startDate, endDate: data.endDate, sendDate: data.sendDate };
@@ -154,10 +159,7 @@ app.post('/api/addUser', (req, res) => {
             }
           });
 
-      } finally {
-        await client.close();
-      }
-    }
+      } 
   addUser(data).catch(console.dir);
 });
 
