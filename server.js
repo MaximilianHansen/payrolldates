@@ -158,6 +158,31 @@ app.post('/api/addUser', (req, res) => {
   addUser(data).catch(console.dir);
 });
 
+async function correctMissedUpdates() {
+    const database = client.db('pddb');
+    const collection = database.collection('users');
+
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    let yesterdayString = (yesterday.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                          yesterday.getDate().toString().padStart(2, '0') + '/' +
+                          (yesterday.getFullYear() % 100).toString().padStart(2, '0');
+
+    const cursor = collection.find({ sendDate: yesterdayString });
+    const missedUsers = await cursor.toArray();
+    
+    emailUsers(missedUsers);  // This function will also call `updateDates` for each user
+}
+
+app.get('/correct-missed-updates', (req, res) => {
+    correctMissedUpdates().then(() => {
+        res.send("Missed updates corrected successfully!");
+    }).catch(err => {
+        console.error("Error correcting missed updates:", err);
+        res.status(500).send("Error correcting missed updates.");
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
