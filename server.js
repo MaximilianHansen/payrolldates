@@ -174,7 +174,7 @@ async function correctMissedUpdates() {
     emailUsers(missedUsers);  // This function will also call `updateDates` for each user
 }
 
-app.get('/correct-missed-updates', (req, res) => {
+app.get('/api/correct-missed-updates', (req, res) => {
     correctMissedUpdates().then(() => {
         res.send("Missed updates corrected successfully!");
     }).catch(err => {
